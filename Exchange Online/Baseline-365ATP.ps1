@@ -33,7 +33,7 @@
     [CmdletBinding()]
     Param 
     (
-        [Parameter(Mandatory=$false)]$TargetedUsersToProtect, #This parameter uses the syntax: "DisplayName;EmailAddress".
+        [Parameter(Mandatory=$false)]$TargetedUsersToProtect, #set this to true if you want to query Azure Ad for all users and add them to the impersonation policy. 
         [Parameter(Mandatory=$false)]$EnableTargetedUserProtection,
         [Parameter(Mandatory=$false)]$TargetedUserProtectionAction = 'Quarantine', #Move the message to quarantine. Quarantined high confidence phishing messages are only available to admins. As of April 2020, quarantined phishing messages are available to the intended recipients.
         $EnableOrganizationDomainsProtection = $true,
@@ -75,16 +75,18 @@
         
      }
 
-    if($TargetedUsersToProtect -eq $True -and $EnableTargetedUserProtection -eq $True) {
+    if([bool]$TargetedUsersToProtect -eq $True -and [bool]$EnableTargetedUserProtection -eq $True) {
         Write-Host "The EnableTargetedUserProtection parameter specifies whether to enable user impersonation protection for a list of specified users"
+        #query all users
         $upn = get-msoluser | Select-Object DisplayName, UserPrincipalName
+        #fill object with correct syntax 
         $TargetedUsersToProtect = foreach ($n in $upn) { $n.DisplayName, $n.UserPrincipalName -join ";" };
-
+        
         Set-AntiPhishPolicy -Identity "Office365 AntiPhish Default" -EnableTargetedUserProtection $EnableTargetedUserProtection -TargetedUsersToProtect $TargetedUsersToProtect -TargetedUserProtectionAction $TargetedUserProtectionAction @PhishPolicyParam
     }
 
     else {
-        Set-AntiPhishPolicy -Identity "Office365 AntiPhish Default" @PhishThresholdLevel
+        Set-AntiPhishPolicy -Identity "Office365 AntiPhish Default" @PhishPolicyParam
     }
 
 }
