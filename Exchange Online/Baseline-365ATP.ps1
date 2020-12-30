@@ -33,19 +33,18 @@
     [CmdletBinding()]
     Param 
     (
-        [Parameter(Mandatory=$false)]$TargetedUsersToProtect, #set this to true if you want to query Azure Ad for all users and add them to the impersonation policy. 
-        [Parameter(Mandatory=$false)]$EnableTargetedUserProtection,
-        [Parameter(Mandatory=$false)]$TargetedUserProtectionAction = 'Quarantine', #Move the message to quarantine. Quarantined high confidence phishing messages are only available to admins. As of April 2020, quarantined phishing messages are available to the intended recipients.
+        [bool][Parameter(Mandatory=$false)]$ProtectAllUsers, #set this to true if you want to query Azure Ad for all users and add them to the impersonation policy. 
+        $TargetedUserProtectionAction = 'Quarantine', #Move the message to quarantine. Quarantined high confidence phishing messages are only available to admins. As of April 2020, quarantined phishing messages are available to the intended recipients.
         $EnableOrganizationDomainsProtection = $true,
         $EnableTargetedDomainsProtection = $true,
-        $TargetedDomainProtectionAction = 'Quarantine', #Move the message to quarantine. Quarantined high confidence phishing messages are only available to admins. As of April 2020, quarantined phishing messages are available to the intended recipients.
+        $TargetedDomainProtectionAction = 'MoveToJmf',
         $EnableSimilarUsersSafetyTips = $true,
         $EnableSimilarDomainsSafetyTips = $true,
         $EnableUnusualCharactersSafetyTips = $true,
         $EnableMailboxIntelligence = $true,
         $EnableMailboxIntelligenceProtection = $true,
         $MailboxIntelligenceProtectionAction = 'MoveToJmf', #Deliver the message to the recipient's mailbox, and move the message to the Junk Email folder.
-        $EnableAntispoofEnforcement = $true,
+        #$EnableAntispoofEnforcement = $true,
         $EnableUnauthenticatedSender = $true,
         $AuthenticationFailAction = 'MoveToJmf', #Deliver the message to the recipient's mailbox, and move the message to the Junk Email folder.
         $PhishThresholdLevel = 2,
@@ -59,7 +58,6 @@
         'EnableOrganizationDomainsProtection' = $EnableOrganizationDomainsProtection;
         'EnableTargetedDomainsProtection' = $EnableTargetedDomainsProtection
         'TargetedDomainsToProtect' = $RecipientDomains;
-        'TargetedUserProtectionAction' =  $TargetedUserProtectionAction
         'TargetedDomainProtectionAction' =  $TargetedDomainProtectionAction
         'EnableSimilarUsersSafetyTips' = $EnableSimilarUsersSafetyTips;
         'EnableSimilarDomainsSafetyTips' = $EnableSimilarDomainsSafetyTips;
@@ -67,7 +65,7 @@
         'EnableMailboxIntelligence' = $EnableMailboxIntelligence;
         'EnableMailboxIntelligenceProtection' = $EnableMailboxIntelligenceProtection;
         'MailboxIntelligenceProtectionAction' = $MailboxIntelligenceProtectionAction;
-        'EnableAntispoofEnforcement' = $EnableAntispoofEnforcement;
+        #'EnableAntispoofEnforcement' = $EnableAntispoofEnforcement;
         'EnableUnauthenticatedSender' = $EnableUnauthenticatedSender;
         'AuthenticationFailAction' =  $AuthenticationFailAction;
         'PhishThresholdLevel' = $PhishThresholdLevel;
@@ -75,30 +73,30 @@
         
      }
 
-    if([bool]$TargetedUsersToProtect -eq $True -and [bool]$EnableTargetedUserProtection -eq $True) {
-        Write-Host "The EnableTargetedUserProtection parameter specifies whether to enable user impersonation protection for a list of specified users"
+    if([bool]$ProtectAllUsers -eq $True) {
+        $Answer = Read-Host "This will add all users to the impersonation policy. If you have more than 60 users this will fail. Type Y or N and press Enter to continue"
+        if ($Answer -eq 'y' -or $Answer -eq 'yes') {
         #query all users
         $upn = get-msoluser | Select-Object DisplayName, UserPrincipalName
         #fill object with correct syntax 
         $TargetedUsersToProtect = foreach ($n in $upn) { $n.DisplayName, $n.UserPrincipalName -join ";" };
+        Write-Host -ForegroundColor green "Added $(($TargetedUsersToProtect).Count) to users to protect section in the policy"
         
-        Set-AntiPhishPolicy -Identity "Office365 AntiPhish Default" -EnableTargetedUserProtection $EnableTargetedUserProtection -TargetedUsersToProtect $TargetedUsersToProtect -TargetedUserProtectionAction $TargetedUserProtectionAction @PhishPolicyParam
+        Set-AntiPhishPolicy -Identity "Office365 AntiPhish Default" -EnableTargetedUserProtection $True -TargetedUsersToProtect $TargetedUsersToProtect -TargetedUserProtectionAction $TargetedUserProtectionAction @PhishPolicyParam
+        }
+        else {
+            break;
+        }
     }
-
     else {
         Set-AntiPhishPolicy -Identity "Office365 AntiPhish Default" @PhishPolicyParam
     }
 
 }
 
-<#
-Write-Host 
-Write-Host -foregroundcolor green "Creating the Anti-Phish Baseline Policy..."
+#Testing
+#Connect-ExchangeOnline
+#Connect-MsolService
 
-## Create the Anti-Phish policy 
-## https://docs.microsoft.com/en-us/powershell/module/exchange/advanced-threat-protection/new-antiphishpolicy?view=exchange-ps
-## You can edit the below to enable TargetedDomainsToProtect as well as TargetedUsersToProtect, as needed (optional).
 
-Connect-ExchangeOnline
-Connect-MsolService
-#>
+#Set-DefaultBaseline365ATP
