@@ -13,14 +13,15 @@ schema: 2.0.0
 ## SYNTAX
 
 ```
-Set-DefaultBaseline365ATP [[-EnableTargetedUserProtection] <Object>] [[-TargetedUsersToProtect] <Object>]
+Set-DefaultBaseline365ATP [[-TargetedUsersToProtect] <Object>] [[-EnableTargetedUserProtection] <Object>]
  [[-EnableOrganizationDomainsProtection] <Object>] [[-EnableTargetedDomainsProtection] <Object>]
  [[-TargetedUserProtectionAction] <Object>] [[-TargetedDomainProtectionAction] <Object>]
  [[-EnableSimilarUsersSafetyTips] <Object>] [[-EnableSimilarDomainsSafetyTips] <Object>]
  [[-EnableUnusualCharactersSafetyTips] <Object>] [[-EnableMailboxIntelligence] <Object>]
  [[-EnableMailboxIntelligenceProtection] <Object>] [[-MailboxIntelligenceProtectionAction] <Object>]
- [[-EnableUnauthenticatedSender] <Object>] [[-AuthenticationFailAction] <Object>]
- [[-PhishThresholdLevel] <Object>] [[-Enabled] <Object>] [<CommonParameters>]
+ [[-EnableAntispoofEnforcement] <Object>] [[-EnableUnauthenticatedSender] <Object>]
+ [[-AuthenticationFailAction] <Object>] [[-PhishThresholdLevel] <Object>] [[-Enabled] <Object>]
+ [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -46,7 +47,22 @@ Parameter Sets: (All)
 Aliases:
 
 Required: False
-Position: 13
+Position: 14
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -EnableAntispoofEnforcement
+{{ Fill EnableAntispoofEnforcement Description }}
+
+```yaml
+Type: Object
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: 12
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
@@ -151,7 +167,7 @@ Parameter Sets: (All)
 Aliases:
 
 Required: False
-Position: 0
+Position: 1
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
@@ -166,7 +182,7 @@ Parameter Sets: (All)
 Aliases:
 
 Required: False
-Position: 12
+Position: 13
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
@@ -196,7 +212,7 @@ Parameter Sets: (All)
 Aliases:
 
 Required: False
-Position: 15
+Position: 16
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
@@ -226,7 +242,7 @@ Parameter Sets: (All)
 Aliases:
 
 Required: False
-Position: 14
+Position: 15
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
@@ -271,7 +287,7 @@ Parameter Sets: (All)
 Aliases:
 
 Required: False
-Position: 1
+Position: 0
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
