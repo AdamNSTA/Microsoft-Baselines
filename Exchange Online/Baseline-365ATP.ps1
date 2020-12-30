@@ -23,6 +23,31 @@ https://docs.microsoft.com/en-us/powershell/exchange/exchange-online/connect-to-
 #################################################
 
 
+function Set-DefaultBaseline365ATP {
+    [CmdletBinding()]
+    Param 
+    (
+        $EnableTargetedUserProtection = $false,
+        $TargetedUsersToProtect = $TargetedUsersToProtect,
+        $EnableOrganizationDomainsProtection = $true,
+        $EnableTargetedDomainsProtection = $false,
+        $TargetedUserProtectionAction = 'Quarantine',
+        $TargetedDomainProtectionAction = 'Quarantine',
+        $EnableSimilarUsersSafetyTips = $true,
+        $EnableSimilarDomainsSafetyTips = $true,
+        $EnableUnusualCharactersSafetyTips = $true,
+        $EnableMailboxIntelligence = $true,
+        $EnableMailboxIntelligenceProtection = $true,
+        $MailboxIntelligenceProtectionAction = 'MoveToJmf',
+        #$EnableAntispoofEnforcement = $true,
+        $EnableUnauthenticatedSender = $true,
+        $AuthenticationFailAction = 'MoveToJmf',
+        $PhishThresholdLevel = 2,
+        $Enabled = $true
+    )
+}
+
+<#
 $AcceptedDomains = Get-AcceptedDomain
 $RecipientDomains = $AcceptedDomains.DomainName
 
@@ -40,32 +65,10 @@ $AcceptedDomains = Get-AcceptedDomain
 $RecipientDomains = $AcceptedDomains.DomainName
 
 $upn = get-msoluser | select DisplayName, UserPrincipalName
-$TargetedUsersToProtect = foreach ($n in $upn) { $n.DisplayName,$n.UserPrincipalName -join ";" };
+$TargetedUsersToProtect = foreach ($n in $upn) { $n.DisplayName, $n.UserPrincipalName -join ";" };
 
 
 $TargetedUsersToProtect
-$PhishPolicyParam=@{
-   #'Name' = "AntiPhish Baseline Policy";
-   #'AdminDisplayName' = "AntiPhish Baseline Policy";
-   'EnableTargetedUserProtection' = $false;
-   'TargetedUsersToProtect' = $TargetedUsersToProtect
-   'EnableOrganizationDomainsProtection' = $true;
-   'EnableTargetedDomainsProtection' = $false;
-   ##'TargetedDomainsToProtect' = $RecipientDomains;
-   'TargetedUserProtectionAction' =  'Quarantine';
-   'TargetedDomainProtectionAction' =  'Quarantine';
-   'EnableSimilarUsersSafetyTips' = $true;
-   'EnableSimilarDomainsSafetyTips' = $true;
-   'EnableUnusualCharactersSafetyTips' = $true;
-   'EnableMailboxIntelligence' = $true;
-   'EnableMailboxIntelligenceProtection' = $true;
-   'MailboxIntelligenceProtectionAction' = 'MoveToJmf';
-   #'EnableAntispoofEnforcement' = $true;
-   'EnableUnauthenticatedSender' = $true;
-   'AuthenticationFailAction' =  'MoveToJmf';
-   'PhishThresholdLevel' = 2;
-   'Enabled' = $true
-   
-}
 
 Set-AntiPhishPolicy -Identity "Office365 AntiPhish Default" @PhishPolicyParam
+#>
