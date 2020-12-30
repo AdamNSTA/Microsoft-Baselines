@@ -68,4 +68,4 @@ $PhishPolicyParam=@{
    
 }
 
-#Set-AntiPhishPolicy -Identity "Office365 AntiPhish Default" @PhishPolicyParam
+Set-AntiPhishPolicy -Identity "Office365 AntiPhish Default" @PhishPolicyParam
